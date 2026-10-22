@@ -51,8 +51,15 @@ Before starting any new development in this repo:
 - JDK 21 (`JAVA_HOME` -> JDK 21); the toolchain targets Java 21.
 - The Gradle wrapper is committed. `./gradlew build` compiles,
   `./gradlew runGameTestServer` runs the GameTest server.
-- `libs/` (compile-only) and `testmods/` (runtime closure) are **gitignored** staging
-  folders. Never commit third-party jars.
+- **Dependencies resolve through Maven, never local folders.** Compile-only mods use
+  CurseMaven coordinates (`curse.maven:<slug>-<projectId>:<fileId>`, repository
+  `https://cursemaven.com`); Modrinth-exclusive mods use the official Modrinth maven
+  (`maven.modrinth:<project-slug>:<version>`, repository
+  `https://api.modrinth.com/maven`). Runtime mod closures for GameTest runs live in a
+  dedicated Gradle configuration synced into the run's `mods/` folder. Gitignored
+  `libs/` and `testmods/` staging folders are retired: CI must resolve every
+  dependency from a clean checkout. Pin the exact version the repo was verified
+  against; bump pins deliberately, never implicitly.
 - On `run/` file-lock errors, kill any stale `java` process and retry.
 
 ## PowerShell quirks (this org is developed on Windows)
@@ -104,13 +111,17 @@ Before starting any new development in this repo:
 
 ## CI & release model
 
-- `ci.yml` currently enforces the **version-bump guard only**: a beta or stable bump must
-  change the version file and nothing else; an `-alpha` bump may bundle work; a PR labelled
-  `breaking` forces the next clean bump to raise the major or minor version.
-- **Build and GameTest jobs are deferred.** Some dependencies are not resolvable from a
-  clean checkout via CurseMaven alone, so compiling in CI would fail every run. They land
-  once a jar-fetch step exists. Until then, run `./gradlew build` and the GameTest task
-  locally before pushing.
+- `ci.yml` runs three checks that back the branch protection rulesets: **junit**
+  (build + the JUnit suite, asserted non-vacuous), **gametest** (`runGameTestServer`,
+  graded on the `All N required tests passed` log line - the exit code is not a
+  reliable signal) and **version-bump** (a beta or stable bump must change the
+  version file and nothing else; an `-alpha` bump may bundle work; a PR labelled
+  `breaking` forces the next clean bump to raise the major or minor version).
+- **Branch protection:** the default branch is guarded by two repository rulesets -
+  `protect-main` (PR-only, squash merge only, strict `junit`/`gametest`/`version-bump`
+  status checks, no force-pushes, no branch deletion) and
+  `require-review-from-write-access` (one approving review; the listed org owners
+  bypass). Direct pushes to the default branch are rejected by GitHub.
 - `version-bump.yml` opens an isolated version-bump PR (only the version file changes).
 - CurseForge publishing (`curseforge.yml`) is **deferred** until the mod has a CurseForge
   listing and the `CURSEFORGE_PROJECT_ID` / `CURSEFORGE_API_KEY` secrets. Do not add it
