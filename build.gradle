@@ -89,6 +89,22 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
 
+// JUnit suite: the CI junit check grades it and refuses to pass on an empty
+// run, so this configuration must stay wired in every derived repo.
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.2')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+test {
+    useJUnitPlatform()
+}
+
 // --- GameTest harness -------------------------------------------------------
 
 // Grade the run on the log summary, not the exit code: the GameTestServer prints
