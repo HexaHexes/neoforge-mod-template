@@ -88,8 +88,14 @@ Before starting any new development in this repo:
 - **`mod_id`:** lowercase with underscores (e.g. `tensura_colony_gear`). Minecraft
   requires `[a-z][a-z0-9_]{1,63}`.
 - **Jar / `archivesName`:** follows `mod_id` by default.
+- **Java base package:** `org.bitwisemadness.<project-name>` - repo name lowercased,
+  separators stripped (e.g. `ds-tensura-fix` -> `org.bitwisemadness.dstensurafix`).
+  The Maven `group` in `build.gradle` matches (`org.bitwisemadness`).
 - Keep repo name, folder name, `mod_id`, and the Java package aligned; the rename
   checklist in `README.md` walks the whole set.
+- **This template is canonical for org-wide rules.** When a rule is added or changed
+  in any repo's `agents/AGENTS.md`, mirror the same change into the template so new
+  repos inherit it.
 
 ## CI & release model
 
