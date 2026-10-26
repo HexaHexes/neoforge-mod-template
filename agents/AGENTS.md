@@ -88,6 +88,11 @@ Before starting any new development in this repo:
   UTF-8 BOM that breaks Gradle's parser and YAML. Use
   `[System.IO.File]::WriteAllText($path, $text)` (no BOM). Re-check for BOMs after
   any script-written edit.
+- **A fresh `git init` on Windows records new files as `100644`** — the executable bit
+  is invisible to git there, so a committed `gradlew` reaches CI as non-executable and
+  every job dies with `./gradlew: Permission denied` before Gradle starts. Before a
+  repo's first commit, run `git update-index --chmod=+x gradlew` and confirm with
+  `git ls-files -s gradlew` (expect `100755`).
 
 ## Git & release
 
