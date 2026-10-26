@@ -60,6 +60,22 @@ Before starting any new development in this repo:
   `libs/` and `testmods/` staging folders are retired: CI must resolve every
   dependency from a clean checkout. Pin the exact version the repo was verified
   against; bump pins deliberately, never implicitly.
+- **Org-owned libraries publish to GitHub Packages** (`https://maven.pkg.github.com/HexaHexes/<repo>`,
+  e.g. `infinite-dungeon-api`) and follow the same rule - never fall back to a
+  gitignored local jar. Watch three things here:
+  - **Reads always require auth, and GitHub answers 404 (not 401) when it is missing**,
+    so an unauthenticated consumer fails with a message that looks like a mistyped
+    artifact coordinate rather than a credential problem.
+  - **The workflow `GITHUB_TOKEN` can publish a package owned by its own repo but
+    cannot read a package owned by a different repository.** Consumers use the org
+    secret `PACKAGE_READ_TOKEN` (classic token, `read:packages`). Declare the
+    repository in `build.gradle` with credentials reading `System.getenv('GITHUB_ACTOR')`
+    / `System.getenv('GITHUB_TOKEN')`, falling back to the `gpr.user` / `gpr.key`
+    Gradle properties for local builds.
+  - Inject the secret **scoped to the Gradle step only**
+    (`env: GITHUB_TOKEN: ${{ secrets.PACKAGE_READ_TOKEN }}`), never at job level -
+    job-level injection silently changes what `actions/checkout` and any `gh` CLI
+    step authenticates as.
 - On `run/` file-lock errors, kill any stale `java` process and retry.
 
 ## PowerShell quirks (this org is developed on Windows)
