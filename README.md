@@ -52,8 +52,10 @@ known places. Search the repo for each of these before you start.
    lives at `src/gametest/resources/data/<mod_id>/structure/empty.nbt`; move it
    under your new mod id. The smoke test's `@GameTest(template = "empty")`
    resolves it.
-8. **`agents/AGENTS.md`** — update the header (repo, mod id, jar name) and the
-   repo-specific notes at the top.
+8. **`agents/REPO.md`** — fill in the repo header (repo, mod id, jar name), the
+   description, the dependencies, the test line and the gotchas. Do not edit
+   `agents/AGENTS.md`: it is pulled verbatim from the template repo and only
+   changes there.
 
 Search for leftovers before your first build:
 
@@ -73,3 +75,9 @@ All three should return nothing once the rename is complete.
 
 GNU Lesser General Public License v2.1 — see [`LICENSE`](LICENSE).
 Copyright (c) 2026 Bitwise Madness.
+
+## AI disclosure
+
+Parts of this project were written with the assistance of AI coding tools.
+AI-assisted code, data and documentation ship only after human review by the
+maintainers.
