@@ -56,6 +56,10 @@ known places. Search the repo for each of these before you start.
    description, the dependencies, the test line and the gotchas. Do not edit
    `agents/AGENTS.md`: it is pulled verbatim from the template repo and only
    changes there.
+9. **Publishing block in `build.gradle`** — set the GitHub Packages URL in the
+   `publishing` block to this repository
+   (`https://maven.pkg.github.com/HexaHexes/<repo-name>`); the artifactId and the
+   pom metadata already read from `gradle.properties`.
 
 Search for leftovers before your first build:
 
