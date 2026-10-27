@@ -60,6 +60,9 @@ known places. Search the repo for each of these before you start.
    `publishing` block to this repository
    (`https://maven.pkg.github.com/HexaHexes/<repo-name>`); the artifactId and the
    pom metadata already read from `gradle.properties`.
+10. **`NOTICE`** — replace `<project name>` with the mod name and add attribution
+    for anything the mod reads through public APIs or includes. The file is
+    mandatory and must never be deleted.
 
 Search for leftovers before your first build:
 
