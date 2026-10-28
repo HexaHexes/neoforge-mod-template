@@ -128,15 +128,21 @@ jobs:
           JAR=$(ls build/libs/"$MOD_ID"-*.jar | head -1)
           echo "jar: $JAR"
 
-          DISK_COUNT=$(find src/generated/resources/data -name '*.json' | wc -l)
-          JAR_COUNT=$(unzip -l "$JAR" | grep -c ' data/.*\.json' || true)
+          # Subset, not count equality: a repo may also hand-author data/**
+          # files that belong in the jar alongside the generated ones
+          # (tiered-echoes ships three), and the failure that matters is a
+          # GENERATED file left out of the jar.
+          unzip -l "$JAR" | awk '{print $NF}' | grep '^data/.*\.json$' | sort > jar_files.txt
+          (cd src/generated/resources && find data -name '*.json' | sort) > disk_files.txt
+          MISSING=$(comm -23 disk_files.txt jar_files.txt)
 
-          if [ "$JAR_COUNT" -ne "$DISK_COUNT" ]; then
-            echo "::error::The jar ships $JAR_COUNT datapack files but the tree carries $DISK_COUNT."
+          if [ -n "$MISSING" ]; then
+            echo "::error::Generated datapack files missing from the jar:"
+            echo "$MISSING"
             exit 1
           fi
 
-          echo "Jar ships all $DISK_COUNT datapack files."
+          echo "Jar ships all $(wc -l < disk_files.txt) generated datapack files."
 
       - name: Upload jar
         if: always()
