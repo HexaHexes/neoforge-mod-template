@@ -215,7 +215,8 @@ file into this repo verbatim as its own PR - never re-type or patch it by hand.
   `${ALPHA_RELEASES:-true}` - repository variables cannot ship in template
   content, so the file carries it); set `ALPHA_RELEASES` to `false` on a repo
   to opt out, which skips with a log line rather than a failure. Promoted from
-  its release notes are player-facing - rewrite them when promoting the file into a mod.
+  `tensura-iaf-growth`, the org's reference implementation, and its release
+  notes are player-facing - rewrite them when promoting the file into a mod.
 - `publish.yml` publishes the jar as a Maven artifact to the org's GitHub Packages
   registry whenever a GitHub release is published, via the `maven-publish` block in
   `build.gradle` (artifactId is `mod_id`; pom metadata comes from `gradle.properties`;
