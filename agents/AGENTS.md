@@ -188,6 +188,16 @@ file into this repo verbatim as its own PR - never re-type or patch it by hand.
   that same follow-up runs one `spotlessApply` per repo to clear the baseline
   and flips the four switches. The tools are pinned in `build.gradle`
   (`com.github.spotbugs` 6.5.x, `com.diffplug.spotless` 8.x).
+- `dependency-submission.yml` + `dependency-review.yml` form the **dependency
+  review** gate: submission pushes a Gradle dependency snapshot on PRs and
+  default-branch pushes (Gradle cannot be parsed statically and no lockfiles
+  are committed, so review without submission would compare nothing and pass
+  vacuously), and the review fails a PR that *introduces* a vulnerable or
+  license-incompatible dependency, waiting up to 10 min for the head snapshot
+  (`retry-on-snapshot-warnings`). It is a diff against the merge base, so
+  pre-existing debt never blocks. Defaults only - no license allow/deny lists
+  yet; that policy is a separate decision. Free on public repos. Not a
+  required check initially: observe first, gate later if the signal is good.
 - `version-bump.yml` opens an isolated version-bump PR (only the version file changes).
 - `release.yml` publishes a GitHub release for `v<mod_version>` on a push to the default
   branch when that release does not exist yet, attaching the jar the build produced. The
