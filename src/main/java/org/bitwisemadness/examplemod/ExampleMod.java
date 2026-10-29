@@ -19,6 +19,5 @@ public final class ExampleMod {
 
     public ExampleMod(IEventBus modBus) {
         LOGGER.info("Example Mod initialized");
-    // control test: trailing whitespace below, squashed away  
     }
 }
