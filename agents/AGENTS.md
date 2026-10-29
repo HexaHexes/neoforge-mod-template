@@ -176,6 +176,18 @@ file into this repo verbatim as its own PR - never re-type or patch it by hand.
   `protect-main` required checks (with `junit`/`gametest`/`version-bump`). The
   build step carries the step-scoped `PACKAGE_READ_TOKEN` so a derived repo
   resolving cross-repo Packages works on a cold cache.
+- `ci.yml` also runs a **static** job: SpotBugs (`spotbugsMain`, `effort=MAX`)
+  and Spotless (minimal profile - trailing whitespace, final newline,
+  import order on `src/*/java` only; no formatter, so no repo-wide rewrites).
+  Both are **report-only during the grace period**: SpotBugs runs with
+  `ignoreFailures`, Spotless with `continue-on-error` in CI and
+  `enforceCheck false` in Gradle - so neither the `static` job nor the junit
+  job's `./gradlew build` can fail on findings. The SpotBugs HTML report is
+  uploaded as the `spotbugs-report` artifact every run. Gating turns on in a
+  follow-up once the finding volume is known (0 on the template at adoption);
+  that same follow-up runs one `spotlessApply` per repo to clear the baseline
+  and flips the four switches. The tools are pinned in `build.gradle`
+  (`com.github.spotbugs` 6.5.x, `com.diffplug.spotless` 8.x).
 - `version-bump.yml` opens an isolated version-bump PR (only the version file changes).
 - `release.yml` publishes a GitHub release for `v<mod_version>` on a push to the default
   branch when that release does not exist yet, attaching the jar the build produced. The
