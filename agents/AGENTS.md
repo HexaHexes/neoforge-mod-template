@@ -18,7 +18,12 @@ Before starting any new development in this repo:
 
 1. **Open issues for the work.** Every piece of work begins as an issue - or
    several, for complex tasks - detailing what needs to be done; the PR
-   references them. No tracking issue, no work.
+   references them. No tracking issue, no work. Use the issue forms in
+   `.github/ISSUE_TEMPLATE/`: **Bug** (one bug per issue, with reproduction,
+   severity and regression-test requirements), **Feature** (one verifiable
+   outcome per issue, with upstream evidence and an acceptance gate) and
+   **Investigation** (resolve an unknown first - closes only with verified
+   findings and the follow-up implementation issues already created).
 2. **Check rule freshness.** Compare this repo's `agents/AGENTS.md` against the
    template's and reconcile any drift before touching code - rules changed in
    the template must have been pulled here first.
