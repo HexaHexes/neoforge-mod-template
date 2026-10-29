@@ -21,6 +21,21 @@ or "install and play". Include any config or operator-level commands.
 | Required | NeoForge | — |
 | Optional | Example Library | What breaks or is missing without it |
 
+## In-game config editing
+
+Mods built with this template can be edited in-game with
+[Configured](https://www.curseforge.com/minecraft/mc-mods/configured) - install
+it like any other mod; it adds no code to this one. Open the mod list, select a
+mod, press Config, and change values directly: Configured writes through
+NeoForge's config system, so a reload applies the new values without restarting
+the game.
+
+This template pre-wires the config-screen background in
+`src/main/templates/META-INF/neoforge.mods.toml`
+(`[modproperties.${mod_id}] configuredBackground`) - point it at any texture you
+like. Note Configured only shows a menu for mods that actually register a
+config: a template-derived mod with no registered settings has nothing to show.
+
 ## Using this template
 
 This repository is a **template** for new NeoForge mods in this org. To start a
