@@ -210,10 +210,13 @@ file into this repo verbatim as its own PR - never re-type or patch it by hand.
 - `release.yml` publishes a GitHub release for `v<mod_version>` on a push to the default
   branch when that release does not exist yet, attaching the jar the build produced. The
   jar name is read from `mod_id`, so a rename needs no edit here. Pre-releases are
-  opt-in: an `-alpha`/`-beta` version publishes only when the repository variable
-  `ALPHA_RELEASES` is `true`, otherwise it is skipped with a log line rather than a
-  failure. Promoted from `tensura-iaf-growth`, the org's reference implementation, and
-  its release notes are player-facing - rewrite them when promoting the file into a mod.
+  enabled by default: an `-alpha`/`-beta` version publishes on the first push
+  that would create it (the default lives in release.yml as
+  `${ALPHA_RELEASES:-true}` - repository variables cannot ship in template
+  content, so the file carries it); set `ALPHA_RELEASES` to `false` on a repo
+  to opt out, which skips with a log line rather than a failure. Promoted from
+  `tensura-iaf-growth`, the org's reference implementation, and its release
+  notes are player-facing - rewrite them when promoting the file into a mod.
 - `publish.yml` publishes the jar as a Maven artifact to the org's GitHub Packages
   registry whenever a GitHub release is published, via the `maven-publish` block in
   `build.gradle` (artifactId is `mod_id`; pom metadata comes from `gradle.properties`;
