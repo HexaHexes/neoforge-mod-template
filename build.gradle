@@ -189,6 +189,8 @@ publishing {
 // artifact every run (the CI step uses if: always()).
 spotbugs {
     effort = com.github.spotbugs.snom.Effort.MAX
+    // Shared EI_EXPOSE_REP/EI_EXPOSE_REP2 exclusions; scope rule in the file.
+    excludeFilter = file('config/spotbugs-exclude.xml')
 }
 
 spotbugsTest {
