@@ -249,6 +249,12 @@ The org's approved rewrite of record is `tensura-jade` PR #27
   check goes red; the org-wide survey on #52 recorded 174 findings across 14
   repos at flip time. The tools are pinned in `build.gradle`
   (`com.github.spotbugs` 6.5.x, `com.diffplug.spotless` 8.x).
+  SpotBugs exclusions live in `config/spotbugs-exclude.xml` (wired via
+  `excludeFilter`): the `EI_EXPOSE_REP`/`EI_EXPOSE_REP2` pair only -
+  reference exposure is idiomatic NeoForge (fields hold `Level`/`ItemStack`/
+  capability objects by design), everything else stays enforced. Adding a
+  pattern to that file needs an issue-first decision (#52) - never grow it
+  silently.
 - `dependency-submission.yml` + `dependency-review.yml` form the **dependency
   review** gate: submission pushes a Gradle dependency snapshot on PRs and
   default-branch pushes (Gradle cannot be parsed statically and no lockfiles
