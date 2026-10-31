@@ -7,6 +7,17 @@ root = true
 [*]
 charset = utf-8
 insert_final_newline = true
+indent_style = space
+indent_size = 4
+# Matches the Checkstyle/Spotless ceiling the CI `static` job enforces.
+max_line_length = 120
+
+[*.{yml,yaml,json}]
+indent_size = 2
+
+[*.md]
+# Prose is rewrapped by hand; a hard column count fights long links.
+max_line_length = off
 
 # Line endings are decided in .gitattributes, not here - pinning end_of_line would
 # reformat files across editors and fight the git-side normalization.

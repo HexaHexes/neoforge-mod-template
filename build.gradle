@@ -1,6 +1,7 @@
 plugins {
     id 'java-library'
     id 'maven-publish'
+    id 'checkstyle'
     id 'net.neoforged.moddev' version '2.0.148'
     id 'com.github.spotbugs' version '6.5.13'
     id 'com.diffplug.spotless' version '8.10.4'
@@ -10,8 +11,7 @@ version = mod_version
 group = mod_group_id
 
 base {
-    // Keep in sync with rootProject.name in settings.gradle and mod_id in
-    // gradle.properties. The shipped jar is <archivesName>-<version>.jar.
+    // Must match rootProject.name and mod_id; the jar is <mod_id>-<version>.jar.
     archivesName = mod_id
 }
 
@@ -19,9 +19,8 @@ java {
     toolchain.languageVersion = JavaLanguageVersion.of(21)
 }
 
-// Game tests live in their own source set: they compile against main, and are
-// deliberately NOT part of sourceSets.main - so none of it is packaged into the
-// released jar. Declared before neoForge because the mods block below joins it.
+// Game tests compile against main but are never part of it, so the jar cannot
+// ship them. Declared before neoForge because the mods block joins it.
 sourceSets {
     gametest {
         compileClasspath += sourceSets.main.output + configurations.compileClasspath
@@ -42,9 +41,7 @@ neoForge {
             programArgument '--nogui'
         }
 
-        // Headless test runner. NeoForge's patched server Main boots a
-        // GameTestServer that runs every registered @GameTest and exits - no
-        // window, no live instance. This is the only verification gate.
+        // Headless verification: boots GameTestServer, runs every @GameTest, exits.
         gameTestServer {
             type = "gameTestServer"
             gameDirectory = project.layout.projectDirectory.dir('run')
@@ -54,17 +51,14 @@ neoForge {
     mods {
         "${mod_id}" {
             sourceSet sourceSets.main
-            // The gametest source set joins the mod for the dev runs so
-            // @GameTestHolder is discovered from FML's scan data. It is still
-            // not in the jar - the jar only packages sourceSets.main.
+            // Joined so @GameTestHolder is discovered in dev runs; still not jarred.
             sourceSet sourceSets.gametest
         }
     }
 }
 
-// Expand the ${...} placeholders in src/main/templates into the real
-// neoforge.mods.toml at build time, so mod identity is edited in one place
-// (gradle.properties) rather than duplicated in the toml.
+// Expands the ${...} placeholders in src/main/templates into the real
+// neoforge.mods.toml, so mod identity is edited in gradle.properties only.
 def generateModMetadata = tasks.register('generateModMetadata', ProcessResources) {
     def replaceProperties = [
             minecraft_version      : minecraft_version,
@@ -83,8 +77,7 @@ def generateModMetadata = tasks.register('generateModMetadata', ProcessResources
     from 'src/main/templates'
     into layout.buildDirectory.dir('generated/sources/modMetadata')
 }
-// Feed the generated metadata in as a resource dir; passing the task provider
-// wires the dependency so the toml is generated before resources are processed.
+// Passing the provider as a source dir also wires the generation order.
 sourceSets.main.resources.srcDir generateModMetadata
 neoForge.ideSyncTask generateModMetadata
 
@@ -92,8 +85,8 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
 
-// JUnit suite: the CI junit check grades it and refuses to pass on an empty
-// run, so this configuration must stay wired in every derived repo.
+// The junit CI check refuses to pass an empty suite, so this stays wired in
+// every derived repo.
 repositories {
     mavenCentral()
 }
@@ -110,9 +103,8 @@ test {
 
 // --- GameTest harness -------------------------------------------------------
 
-// Grade the run on the log summary, not the exit code: the GameTestServer prints
-// "All N required tests passed :)" when every required test succeeds. Keep
-// expectedTests in sync with the @GameTest methods in src/gametest.
+// Grade the run on the log summary: the task's exit code is not a reliable
+// signal. Keep expectedTests in sync with the @GameTest methods.
 tasks.matching { it.name == 'runGameTestServer' }.configureEach {
     def expectedTests = 1
     doLast {
@@ -145,12 +137,8 @@ tasks.matching { it.name == 'runGameTestServer' }.configureEach {
 
 // --- Publishing -------------------------------------------------------------
 
-// Every repo in the org publishes its artifact to the org's GitHub Packages
-// Maven registry for alpha, beta and stable releases (see agents/AGENTS.md):
-// release.yml cuts the GitHub release, publish.yml runs on "release published"
-// and drives this block. Credentials come from the workflow token in CI; a
-// local publish can supply gpr.user / gpr.key in ~/.gradle/gradle.properties.
-// Keep the URL pointing at THIS repository - the rename checklist covers it.
+// release.yml tags, publish.yml drives this block. Keep the URL pointing at
+// THIS repository; local publishes may set gpr.user / gpr.key.
 publishing {
     publications {
         register('mavenJava', MavenPublication) {
@@ -180,16 +168,11 @@ publishing {
 }
 
 // --- Static analysis (enforced) ----------------------------------------------
-// Both tools gate in the `static` CI job: SpotBugs findings fail
-// `spotbugsMain` and Spotless violations fail `spotlessCheck`. SpotBugs sits
-// on the `check` graph, so `./gradlew build` fails on findings too; Spotless
-// stays detached (`enforceCheck false`), keeping the junit job's build
-// style-agnostic by design - the static check is the style gate, junit is
-// not. The SpotBugs HTML report still uploads as the `spotbugs-report`
-// artifact every run (the CI step uses if: always()).
+// The `static` CI job is the gate for all three. SpotBugs and Checkstyle ride
+// Gradle's `check` graph too; Spotless stays out of it by design. Rationale and
+// the shared-filter rules live in agents/AGENTS.md.
 spotbugs {
     effort = com.github.spotbugs.snom.Effort.MAX
-    // Shared EI_EXPOSE_REP/EI_EXPOSE_REP2 exclusions; scope rule in the file.
     excludeFilter = file('config/spotbugs-exclude.xml')
 }
 
@@ -198,10 +181,22 @@ spotbugsTest {
 }
 
 spotbugsMain {
-    // HTML report into build/reports/spotbugs for the CI artifact upload.
     reports {
         html.required = true
         xml.required = false
+    }
+}
+
+checkstyle {
+    toolVersion = '10.21.0'
+    configFile = file('config/checkstyle/checkstyle.xml')
+    maxWarnings = 0
+}
+
+tasks.withType(Checkstyle).configureEach {
+    reports {
+        html.required = true
+        xml.required = true
     }
 }
 
@@ -209,7 +204,6 @@ spotless {
     enforceCheck false
     java {
         // Minimal profile only: no formatter, so no repo-wide rewrites.
-        // Trailing whitespace, final newline, deterministic import order.
         target 'src/*/java/**/*.java'
         trimTrailingWhitespace()
         endWithNewline()
