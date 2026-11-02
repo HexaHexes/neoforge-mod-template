@@ -26,6 +26,10 @@ on:
   push:
     branches:
       - main
+  # Dispatch entry for the post-merge version bump (#81): the bump lands on
+  # main first, then Release is dispatched to publish the new slot - a
+  # GITHUB_TOKEN push does not cascade to other workflows.
+  workflow_dispatch:
 
 permissions:
   contents: write
