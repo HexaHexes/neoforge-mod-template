@@ -42,6 +42,10 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  # The no-BUMP_PR_TOKEN fallback runs `gh workflow run ci.yml --ref <branch>`;
+  # creating a dispatch event requires actions:write on this token, or the step
+  # 403s and marks an otherwise successful bump run as failed (issue #94).
+  actions: write
 
 # Never cancelled. A branch pushed with no PR open is harder to clean up than a slow run
 # is to wait for.
