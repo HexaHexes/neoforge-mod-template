@@ -8,6 +8,8 @@
 - [ ] `./gradlew build` passes locally (compiles)
 - [ ] `./gradlew runGameTestServer` passes locally (assert on the
       `required tests passed` line - the exit code is not reliable)
+- [ ] If this PR touches a mixin in the `client` array: `./gradlew runClient`
+        launched once (the gametest server never loads it - see `docs/mixin-rules.md`)
 - [ ] Change is documented; README updated if user-facing
 - [ ] This PR adds a feature, or changes one `README.md` already describes,
       and updates `README.md` in this PR

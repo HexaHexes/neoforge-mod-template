@@ -21,3 +21,6 @@ in `build.gradle` must match the `@GameTest` count.
 **Gotchas**
 - Note anything a future edit could break: mixin targets, version-file coupling,
   tag overrides, or a dependency that is optional in the toml but hard in the code.
+- Client-array mixins load nowhere in CI (gametests run a dedicated server): never
+  `@Shadow` inherited Minecraft members, and launch `runClient` once before a release
+  - full rules in `docs/mixin-rules.md`.
