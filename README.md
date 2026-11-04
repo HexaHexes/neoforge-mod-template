@@ -58,6 +58,9 @@ known places. Search the repo for each of these before you start.
    `<mod_id>.mixins.json`, and set its `package` to your mixin package. The
    `[[mixins]]` entry in `src/main/templates/META-INF/neoforge.mods.toml`
    already references it by `${mod_id}.mixins.json`.
+   See [`docs/mixin-rules.md`](docs/mixin-rules.md) for the mixin rules:
+   no inherited-member `@Shadow`s, no refmap, and how to verify client mixins
+   (CI never loads the `client` array).
 7. **GameTest template structure**: if you keep the smoke test, the structure
    lives at `src/gametest/resources/data/<mod_id>/structure/empty.nbt`; move it
    under your new mod id. The smoke test's `@GameTest(template = "empty")`
