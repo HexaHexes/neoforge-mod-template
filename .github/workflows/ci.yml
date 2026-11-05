@@ -320,16 +320,28 @@ jobs:
             exit 0
           fi
 
+          # The doctrine keys off the mod_version LINE, not the filename:
+          # dependency pins and comments in gradle.properties (the org keeps
+          # its CurseMaven *_file_id pins there) ride with work freely, while
+          # a mod_version change is a version bump and must stay isolated
+          # (neoforge-mod-template#81, scoped by #89).
+          OLD_VERSION=$(git show "$BASE:gradle.properties" 2>/dev/null | grep '^mod_version=' | cut -d= -f2 | tr -d '[:space:]' || true)
+          NEW_VERSION=$(grep '^mod_version=' gradle.properties | cut -d= -f2 | tr -d '[:space:]')
+
+          if [ "$NEW_VERSION" = "$OLD_VERSION" ]; then
+            echo "gradle.properties changed without touching mod_version (pins or comments). It rides with the work. OK."
+            exit 0
+          fi
+
           EXTRA=$(echo "$CHANGED" | grep -v '^gradle\.properties$' | grep -v '^$' || true)
           if [ -n "$EXTRA" ]; then
             echo "::error::Version bumps ride CI/CD after merge (neoforge-mod-template#81)."
-            echo "::error::A PR must not bundle gradle.properties with other changes. These files must not accompany it:"
+            echo "::error::A mod_version change must not be bundled with other changes. These files must not accompany it:"
             echo "$EXTRA"
-            echo "::error::Revert the gradle.properties change from this PR, or split the bump into its own isolated PR."
+            echo "::error::Revert the mod_version change from this PR, or split the bump into its own isolated PR."
             exit 1
           fi
 
-          NEW_VERSION=$(grep '^mod_version=' gradle.properties | cut -d= -f2 | tr -d '[:space:]')
           echo "Isolated version bump to $NEW_VERSION. OK (the stable/beta path)."
 
       - name: Enforce breaking changes require a major or minor bump
