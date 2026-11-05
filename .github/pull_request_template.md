@@ -25,15 +25,16 @@
 
 ## Version bump
 
-<!-- Ruling: feature changes and bug fixes bump the -alpha.N channel in this
-     PR; template-parity pulls from neoforge-mod-template never bump. Complete
-     this section if and only if gradle.properties is changing. -->
+<!-- Ruling #81: version bumps ride CI/CD - the post-merge workflow raises
+     the -alpha.N slot automatically when work lands, and stable/beta cuts
+     go through an isolated gradle.properties PR (#89 scoped the check to
+     the mod_version line). A work PR never touches mod_version. -->
 
-- [ ] This PR bumps `mod_version` **and nothing else**
-- [ ] New version is a clean bump (e.g. `1.0.0`) - releases as stable
-- [ ] New version has a `-beta`/`-rc` suffix - releases as beta
-- [ ] New version has an `-alpha` suffix - releases as alpha; other
-      changes in this PR are permitted
+- [ ] This PR does **not** change `mod_version` (bumps ride CI/CD post-merge)
+- [ ] If this PR changes `gradle.properties` at all, it is dependency pins
+      or comments only - those ride with the work
+- [ ] If this is a stable/beta release cut: `mod_version` is the **only**
+      change in this PR
 
-<!-- A clean or non-alpha bump combined with any other change is rejected
-     by the version-bump check. Alphas may bundle work. -->
+<!-- A mod_version change combined with any other change is rejected by the
+     version-doctrine check; pin/comment-only changes are exempt (#89). -->
