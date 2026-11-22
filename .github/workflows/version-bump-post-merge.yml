@@ -29,13 +29,15 @@ name: Version bump (post-merge)
 #
 # Owner ruling (amendment to #96, 2026-11-05): the stable cut itself is
 # exempt. The dispatch PR's squash commit ("Bump mod_version to ...") leaves
-# main on the clean version it just published - no train opens and no alpha
+# the default branch on the clean version it just published - no train opens and no alpha
 # is cut beside a fresh stable. The NEXT real change starts
 # x.y.(z+1)-alpha.01 through the clean-stable case below, unchanged.
 
 on:
   push:
-    branches: [ main, master ]
+    # Loader-line branches only (org rule): one branch per supported
+    # loader/version; there is no main/master.
+    branches: [ 'neoforge-*' ]
     paths-ignore:
       - '.github/**'
   # Manual retry for a failed bump: dispatch instead of waiting for the next
@@ -149,6 +151,8 @@ jobs:
           sed -i "s/^mod_version=.*/mod_version=$NEXT/" gradle.properties
           git add gradle.properties
           git commit -m "Version slot $NEXT (post-merge auto-bump)"
-          git push origin HEAD:main
+          # Push back to the branch this run was triggered on - the loader line
+          # - never a hardcoded trunk name.
+          git push origin "HEAD:$GITHUB_REF_NAME"
 
           echo "pushed $NEXT - the push cascade triggers Release"
