@@ -310,7 +310,7 @@ jobs:
           # `gh workflow run ci.yml --ref <branch>`) there is no pull_request
           # event, so BASE falls back to the default branch NAME - and that
           # checkout only materializes the dispatched ref. Git's revision DWIM
-          # does not walk to refs/remotes/origin/<name>, so `git diff main ...`
+          # does not walk to refs/remotes/origin/<name>, so `git diff neoforge-1.21.1 ...`
           # dies with "ambiguous argument" (exit 128). Compare against the
           # remote-tracking ref instead; fetch it if even that is missing.
           if ! printf '%s' "$BASE" | grep -Eq '^[0-9a-f]{40}$'; then
