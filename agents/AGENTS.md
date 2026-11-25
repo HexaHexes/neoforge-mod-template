@@ -68,7 +68,10 @@ file into this repo verbatim as its own PR - never re-type or patch it by hand.
 
 ## Build environment
 
-- JDK 21 (`JAVA_HOME` -> JDK 21); the toolchain targets Java 21.
+- JDK 21 installed (`JAVA_HOME` -> JDK 21); the toolchain targets the line's
+  Java level - Java 21 on `neoforge-1.21.x`, Java 17 on `forge-1.20.1`
+  (issue #114). The foojay resolver in `settings.gradle` provisions a missing
+  toolchain on demand, so a runner without that level still builds.
 - The Gradle wrapper is committed. `./gradlew build` compiles,
   `./gradlew runGameTestServer` runs the GameTest server.
 - **Dependencies resolve through Maven, never local folders.** Compile-only mods use
@@ -129,8 +132,10 @@ file into this repo verbatim as its own PR - never re-type or patch it by hand.
   string is the CurseForge/Modrinth version) and the jar is
   `<mod_id>-<loader line>-<version>.jar`. `build.gradle` derives the line from
   `loader_id` + `minecraft_version`, `release.yml` derives the same line, and
-  workflow push triggers match it with the `neoforge-*` pattern - adding
-  another loader means adding its pattern to those triggers.
+  workflow push triggers carry every supported loader pattern (`neoforge-*`,
+  `forge-*`) - shared workflow files list them ALL so they stay byte-identical
+  across lines (issue #114); adding another loader means adding its pattern
+  everywhere at once.
 - Push only after checks are green **and** the user has given the go.
 - Never sweep the user's uncommitted work into a commit — commit only what is intended.
 - **Commit subjects are changelog lines.** Releases carry an auto-generated
@@ -367,9 +372,9 @@ The org's approved rewrite of record is `tensura-jade` PR #27
   started by the default `GITHUB_TOKEN`, `release.yml` dispatches `publish.yml`,
   `modrinth.yml` and `curseforge.yml` (whichever a repo ships) directly after
   tagging - the `release: published` trigger only covers releases made by hand.
-  When promoting the file into a repo, edit the two
-  env lines at the top: the Minecraft version and the loader names (Modrinth's
-  lowercase forms: `neoforge`, `forge`).
+  The Minecraft version and loader names derive from the tag's
+  `gradle.properties` (`minecraft_version` + `loader_id`, issue #112), so there
+  are no env lines to edit when promoting the file into a line or repo.
 - CurseForge publishing (`curseforge.yml`) is **deferred** until the mod has a CurseForge
   listing and the `CURSEFORGE_PROJECT_ID` / `CURSEFORGE_API_KEY` secrets. Do not add it
   speculatively.
