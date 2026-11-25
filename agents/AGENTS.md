@@ -128,7 +128,7 @@ file into this repo verbatim as its own PR - never re-type or patch it by hand.
   `neoforge-1.21.1-1.0.0-alpha.02` - no mod id, no `v` prefix, and the same
   string is the CurseForge/Modrinth version) and the jar is
   `<mod_id>-<loader line>-<version>.jar`. `build.gradle` derives the line from
-  `mod_id` + `minecraft_version`, `release.yml` derives the same line, and
+  `loader_id` + `minecraft_version`, `release.yml` derives the same line, and
   workflow push triggers match it with the `neoforge-*` pattern - adding
   another loader means adding its pattern to those triggers.
 - Push only after checks are green **and** the user has given the go.

@@ -48,7 +48,7 @@ known places. Search the repo for each of these before you start.
    placeholders are filled from them at build time.
 2. **`settings.gradle`**: set `rootProject.name` to the same value as `mod_id`.
 3. **`build.gradle`**: `archivesName` reads `mod_id` plus the loader line
-   (`neoforge-` + `minecraft_version`), giving the org-standard jar name
+   (`loader_id` + `minecraft_version`), giving the org-standard jar name
    `<mod_id>-<loader>-<mc_version>-<version>.jar`. Leave it unless you want a
    jar name that differs from that formula.
 4. **Default branch**: it must be the loader line, never `main` -
