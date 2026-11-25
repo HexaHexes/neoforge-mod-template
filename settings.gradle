@@ -5,5 +5,6 @@ pluginManagement {
 }
 
 // Keep in sync with mod_id in gradle.properties. archivesName in build.gradle
-// extends mod_id with the loader line; rootProject.name stays the plain mod id.
+// extends mod_id with the loader line (loader_id + minecraft_version);
+// rootProject.name stays the plain mod id.
 rootProject.name = 'examplemod'

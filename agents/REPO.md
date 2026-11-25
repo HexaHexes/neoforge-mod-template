@@ -7,7 +7,7 @@ repo's own and is edited freely; keep it aligned with the org rules rather than
 restating them.
 
 **Repo:** `HexaHexes/<repo-name>` · **Mod ID:** `<mod_id>` · **Branch:** `neoforge-<mc_version>` (the loader line; this is the default branch - no `main`)
-**Platform:** Minecraft 1.21.1 / NeoForge 21.1.259 / JDK 21 · **Jar:** `build/libs/<mod_id>-neoforge-<mc_version>-<version>.jar`
+**Platform:** Minecraft 1.21.1 / NeoForge 21.1.259 / JDK 21 · **Jar:** `build/libs/<mod_id>-<loader_id>-<mc_version>-<version>.jar`
 
 One-paragraph description of what this mod is and what it changes in the game.
 
