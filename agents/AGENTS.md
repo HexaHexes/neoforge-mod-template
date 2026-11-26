@@ -158,6 +158,12 @@ file into this repo verbatim as its own PR - never re-type or patch it by hand.
 - **One feature or bugfix per branch:** develop each on its own feature branch and
   merge it into the default branch through a pull request with a **squash merge**.
   The PR body must detail the work done, following `.github/pull_request_template.md`.
+  Feature branches never start with a loader id (`neoforge-*`, `forge-*`): workflow
+  push triggers match branch names, so a `forge-*` PR branch runs that line's
+  version-bump and Release on the PR itself - the bump then rides the squash into
+  the default branch (seen in neoforge-mod-template #118), and in a mod repo (alpha
+  releases enabled) the Release tags the PR head instead of the merge. Prefix
+  feature branches with `fix-`, `feat-`, `port-` or similar.
 
 ## Multi-line maintenance (sync by cherry-pick)
 
