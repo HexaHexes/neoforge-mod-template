@@ -159,6 +159,40 @@ file into this repo verbatim as its own PR - never re-type or patch it by hand.
   merge it into the default branch through a pull request with a **squash merge**.
   The PR body must detail the work done, following `.github/pull_request_template.md`.
 
+## Multi-line maintenance (sync by cherry-pick)
+
+Each loader line is its own branch, and the decision of record (#115) is that
+fixes flow between lines **by cherry-pick** - never by a multi-loader codebase
+(preprocessor/source-set builds) and never by a shared common module. The rules
+below are what keep cross-line maintenance workable across all lines.
+
+- **A fix lands as a PR on the line the bug was found on.** Squash-merge as
+  usual; the squash commit is the portable unit.
+- **Port it to sibling lines by cherry-pick:** `git cherry-pick -x <squash-sha>`,
+  as its own PR per sibling line, same title, both PR numbers cross-referenced
+  in the body. Squashes are single commits, so picks are clean by construction.
+- **When a pick conflicts or the fix touches loader glue, port manually** -
+  cross-reference both PRs, and never leave a sibling line silently unfixed:
+  either the pick lands or an issue records why the fix cannot exist there.
+- **Files that must stay byte-identical across lines** (so picks apply
+  cleanly): the shared workflows (union loader triggers), this file (verbatim
+  pulls), `.gitattributes`, `.github/scripts/stable-baseline.sh`, the
+  `gradle.properties` key set (values differ per line - `loader_id`,
+  versions, Java level - keys never), the `settings.gradle` comment, README
+  structure. Rule of thumb: a file that differs between lines without a
+  loader/version reason is drift - fix it before it costs a conflicted pick.
+- **Loader glue diverges by design - isolate it:** `build.gradle` (moddev vs
+  ForgeGradle), loader API packages (`net.neoforged.*` vs `net.minecraftforge.*`),
+  version-specific MC API code (components vs NBT, attachments vs capabilities),
+  `neoforge.mods.toml` vs `mods.toml`. Keep loader-specific code in
+  identifiable classes/packages; a business-logic fix should rarely need to
+  touch them.
+- **Versions are per line.** Never copy a version bump across lines; each line
+  auto-bumps on its own merges. Two lines may legitimately differ at any
+  moment - tags embed the loader line, so nothing collides.
+- **Template pulls stay template pulls.** Parity PRs go to every line
+  individually and are never bundled with fix or port work.
+
 ## House style
 
 - **No icons** unless the user explicitly asks. Icons are being removed across all repos.
